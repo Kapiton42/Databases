@@ -1,7 +1,7 @@
-package Hibernate;
+package realestate;
 
-import Configuration.BaseConfiguration;
-import JDBC.User;
+import configuration.BaseConfiguration;
+import user.User;
 import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Before;
@@ -9,10 +9,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
 import java.util.HashSet;
 import java.util.Set;
-
 import static org.junit.Assert.*;
 
 /**
@@ -22,14 +20,17 @@ public class RealEstateServiceTest {
     public static RealEstateService realEstateService;
     public static SessionFactory sessionFactory;
     private static Set<RealEstate> realEstates;
+    private static TestCreateCleanTables testCreateCleanTables;
 
     @BeforeClass
     public static void setUp() {
         final ApplicationContext applicationContext = createApplicationContext();
         realEstateService = applicationContext.getBean(RealEstateService.class);
-        realEstateService.createTables("create-tables.sql");
-        realEstateService.createTables("create-2tables.sql");
         sessionFactory = applicationContext.getBean(SessionFactory.class);
+        testCreateCleanTables = applicationContext.getBean(TestCreateCleanTables.class);
+
+        testCreateCleanTables.createTable("create-user-tables.sql");
+        testCreateCleanTables.createTable("create-realestate-tables.sql");
     }
 
     @Before
@@ -45,22 +46,20 @@ public class RealEstateServiceTest {
 
     @After
     public void tearDownTest() {
-        realEstateService.cleanTables();
+        testCreateCleanTables.cleanTables();
     }
 
     @Test
     public void testSave() throws Exception {
         RealEstate realEstate = realEstates.iterator().next();
-        System.out.println(realEstate.toString());
-        System.out.println(realEstateService.get(realEstate.getId()).get());
-        assertTrue(realEstate.equals(realEstateService.get(realEstate.getId()).get()));
+        assertEquals(realEstate, realEstateService.get(realEstate.getId()).get());
     }
 
     @Test
     public void testGetAll() throws Exception {
         Set<RealEstate> setGet;
         setGet = realEstateService.getAll();
-        assertTrue(setGet.equals(realEstates));
+        assertEquals(setGet, realEstates);
     }
 
     @Test
@@ -68,8 +67,7 @@ public class RealEstateServiceTest {
         RealEstate realEstate = realEstates.iterator().next();
         realEstateService.changeCost(realEstate.getId(), 500);
         realEstateService.update(realEstate);
-        System.out.println(realEstateService.get(realEstate.getId()).get());
-        assertTrue(realEstate.equals(realEstateService.get(realEstate.getId()).get()));
+        assertEquals(realEstate, realEstateService.get(realEstate.getId()).get());
     }
 
     @Test(expected = java.util.NoSuchElementException.class)
@@ -94,11 +92,9 @@ public class RealEstateServiceTest {
 
         user.setMoney(900);
         realEstate.setOwner(user.getId());
-        System.out.println(realEstateService.get(realEstate.getId()).get());
-        System.out.println(realEstateService.getUserService().get(user.getId()).get());
 
-        assertTrue(realEstate.equals(realEstateService.get(realEstate.getId()).get()));
-        assertTrue(user.equals(realEstateService.getUserService().get(user.getId()).get()));
+        assertEquals(realEstate, realEstateService.get(realEstate.getId()).get());
+        assertEquals(user, realEstateService.getUserService().get(user.getId()).get());
     }
 
     public static ApplicationContext createApplicationContext() {

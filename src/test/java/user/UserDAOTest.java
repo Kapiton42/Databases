@@ -1,12 +1,10 @@
-package JDBC;
+package user;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import Configuration.BaseConfiguration;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,11 +18,15 @@ public class UserDAOTest {
 
     private static UserDAO userDAO;
     private static Set<User> users;
+    private static TestCreateCleanTables testCreateCleanTables;
 
     @BeforeClass
     public static void setUpDBTestBaseClass() throws Exception {
         ApplicationContext applicationContext = JDBCTestConfig.createApplicationContext();
+        testCreateCleanTables = applicationContext.getBean(TestCreateCleanTables.class);
         userDAO = applicationContext.getBean(UserDAO.class);
+
+        testCreateCleanTables.createTable("create-user-tables.sql");
     }
 
     @Before
@@ -40,22 +42,19 @@ public class UserDAOTest {
 
     @After
     public void tearDownTest() {
-        userDAO.clearDatabase();
+        testCreateCleanTables.cleanTables("users");
     }
 
     @Test
     public void testInsertGet() throws Exception {
         User user = users.iterator().next();
-        assertTrue(user.equals(userDAO.get(user.getId()).get()));
+        assertEquals(user, userDAO.get(user.getId()).get());
     }
 
     @Test
     public void testGetAll() throws Exception {
         Set<User> usersGet = userDAO.getAll();
-        for(User user: usersGet) {
-            System.out.println(user.toString());
-        }
-        assertTrue(usersGet.equals(users));
+        assertEquals(usersGet, users);
     }
 
     @Test
@@ -63,13 +62,13 @@ public class UserDAOTest {
         User user = users.iterator().next();
         user.setMoney(500);
         userDAO.update(user);
-        assertTrue(user.equals(userDAO.get(user.getId()).get()));
+        assertEquals(user, userDAO.get(user.getId()).get());
     }
 
     @Test(expected = java.util.NoSuchElementException.class)
     public void testDelete() throws Exception {
         User user = users.iterator().next();
         userDAO.delete(user.getId());
-        assertTrue(user.equals(userDAO.get(user.getId()).get()));
+        assertEquals(user, userDAO.get(user.getId()).get());
     }
 }

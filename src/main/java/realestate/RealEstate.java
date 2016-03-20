@@ -1,4 +1,4 @@
-package Hibernate;
+package realestate;
 
 /**
  * Created by kapiton on 06.03.16.

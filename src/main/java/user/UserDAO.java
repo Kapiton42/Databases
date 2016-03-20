@@ -1,4 +1,4 @@
-package JDBC;
+package user;
 /**
  * Created by kapiton on 06.03.16.
  */
@@ -7,8 +7,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -16,7 +14,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-@Repository("UserDAO")
+
 public class UserDAO {
 
     private final JdbcTemplate jdbcTemplate;
@@ -24,7 +22,6 @@ public class UserDAO {
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     public UserDAO(final DataSource dataSource) {
-
         jdbcTemplate = new JdbcTemplate(dataSource);
         namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -97,10 +94,6 @@ public class UserDAO {
         params.put("user_id", userId);
 
         namedParameterJdbcTemplate.update(query, params);
-    }
-
-    public void clearDatabase() {
-        jdbcTemplate.update("DELETE FROM users");
     }
 
     private static final RowMapper<User> rowToUser = (resultSet, rowNum) ->

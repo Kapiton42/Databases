@@ -13,10 +13,10 @@
         </encoder>
     </appender>
 
-    <logger name="Hibernate">
+    <logger name="realestate">
         <appender-ref ref="file"/>
     </logger>
-    <logger name="JDBC">
+    <logger name="user">
         <appender-ref ref="file"/>
     </logger>
 

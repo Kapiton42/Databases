@@ -1,4 +1,4 @@
-package JDBC;
+package user;
 /**
  * Created by kapiton on 06.03.16.
  */
@@ -11,6 +11,13 @@ public final class User {
     private String lastName;
     private int money;
 
+    private User(final Integer id, final String firstName, final String lastName, final int money) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.money = money;
+    }
+
     public static User create(final String firstName, final String lastName, final int money) {
         return new User(null, firstName, lastName, money);
     }
@@ -21,13 +28,6 @@ public final class User {
 
     static User existing(final int id, final String firstName, final String lastName, final int money) {
         return new User(id, firstName, lastName, money);
-    }
-
-    private User(final Integer id, final String firstName, final String lastName, final int money) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.money = money;
     }
 
     public Integer getId() {
